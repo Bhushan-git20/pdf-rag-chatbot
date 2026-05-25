@@ -1,3 +1,7 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 import streamlit as st
 from utils.pdf_processor import process_pdfs
 from utils.chat_engine import get_conversation_chain, handle_user_input
