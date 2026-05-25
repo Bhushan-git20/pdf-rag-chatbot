@@ -1,11 +1,17 @@
 # PDF Q&A RAG Chatbot 📄🤖
 
+![Status: WIP](https://img.shields.io/badge/status-WIP-orange?style=for-the-badge)
+
 A conversational AI chatbot that answers questions from uploaded PDF documents using Retrieval-Augmented Generation (RAG).
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.35-red)
 ![LangChain](https://img.shields.io/badge/LangChain-0.2-green)
 ![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-orange)
+
+> [!NOTE]
+> **Status: Work In Progress (WIP) 🚧**
+> This repository is currently under active development. We are actively refining the RAG prompt pipeline, fine-tuning retrieval configurations, and styling the interface.
 
 ---
 
