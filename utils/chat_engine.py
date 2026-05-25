@@ -1,7 +1,7 @@
 import os
 import streamlit as st
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
+from langchain_classic.chains import ConversationalRetrievalChain
+from langchain_classic.memory import ConversationBufferMemory
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 
