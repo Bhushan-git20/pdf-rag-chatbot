@@ -1,45 +1,60 @@
 # PDF Q&A RAG Chatbot 📄🤖
 
-![Status: WIP](https://img.shields.io/badge/status-WIP-orange?style=for-the-badge)
-
-A conversational AI chatbot that answers questions from uploaded PDF documents using Retrieval-Augmented Generation (RAG).
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.35-red)
-![LangChain](https://img.shields.io/badge/LangChain-0.2-green)
-![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-orange)
-
-> [!NOTE]
-> **Status: Work In Progress (WIP) 🚧**
-> This repository is currently under active development. We are actively refining the RAG prompt pipeline, fine-tuning retrieval configurations, and styling the interface.
+A conversational AI chatbot that answers questions from uploaded PDF documents using advanced Retrieval-Augmented Generation (RAG). Built entirely with Python, Streamlit, and LangChain, it provides an intuitive, ChatGPT-like interface where you can upload documents and instantly query their contents with accurate source attribution.
 
 ---
 
-## Features
+## 🚀 Vision & Key Highlights
 
-- Multi-PDF upload and processing
-- Semantic search using ChromaDB vector store
-- Conversational memory with chat history
-- Source attribution per answer
-- Powered by Gemini 2.5 Flash + HuggingFace Embeddings
+- **Multi-Document Analysis**: Upload one or multiple PDFs at once. The system seamlessly aggregates the text and builds a unified knowledge base.
+- **Accurate Retrieval**: Uses HuggingFace Embeddings and ChromaDB for high-performance semantic search, ensuring the bot retrieves the most relevant paragraphs to answer your queries.
+- **Source Attribution**: Every AI response includes a toggleable "Sources" section showing exactly which paragraphs from your PDFs were used to formulate the answer.
+- **Conversational Memory**: Maintains chat history, allowing you to ask follow-up questions contextually, just like ChatGPT.
 
 ---
 
-## Tech Stack
+## ✨ Comprehensive Feature Suite
+
+### 📄 Intelligent Document Processing
+- **PyPDF2 Integration**: Efficiently extracts raw text from PDF files.
+- **Recursive Character Text Splitting**: Intelligently chunks large documents into smaller, overlapping segments so the AI doesn't lose context.
+
+### 🧠 Semantic Search Engine
+- **Local Vector Database**: Utilizes ChromaDB to store and query document embeddings locally without expensive database overhead.
+- **High-Quality Embeddings**: Uses `sentence-transformers/all-MiniLM-L6-v2` via HuggingFace for fast, accurate text vectorization.
+
+### 💬 Conversational Interface
+- **Streamlit UI**: A clean, modern chat interface with custom CSS for user and bot message bubbles.
+- **Gemini 2.5 Flash**: Leverages Google's ultra-fast Gemini 2.5 Flash LLM to synthesize answers quickly based on retrieved context.
+
+---
+
+## 🛠️ Technology Stack
 
 | Layer | Technology |
 |---|---|
-| UI | Streamlit |
-| LLM | Gemini 2.5 Flash (Google) |
-| Embeddings | sentence-transformers/all-MiniLM-L6-v2 |
-| Vector Store | ChromaDB |
-| Orchestration | LangChain ConversationalRetrievalChain |
-| PDF Parsing | PyPDF2 |
+| **Frontend UI** | Streamlit |
+| **LLM Inference** | Gemini 2.5 Flash (Google) |
+| **Embeddings** | HuggingFace (`all-MiniLM-L6-v2`) |
+| **Vector Store** | ChromaDB |
+| **Orchestration** | LangChain (`ConversationalRetrievalChain`) |
+| **PDF Parsing** | PyPDF2 |
 
 ---
 
-## Architecture
+## 📁 Code Structure & Architecture
 
+```
+pdf-rag-chatbot/
+├── app.py                 # Main Streamlit application and UI definitions
+├── requirements.txt       # Python dependencies
+├── .env.example           # Environment variable template
+└── utils/
+    ├── pdf_processor.py   # Handles PDF text extraction and ChromaDB indexing
+    └── chat_engine.py     # LangChain conversational chain and Gemini integration
+```
+
+**RAG Pipeline Flow:**
 ```
 PDF Upload → Text Extraction → Chunking → Embedding → ChromaDB
                                                            ↓
@@ -48,41 +63,40 @@ User Question → Retriever (top-4 chunks) → Gemini 2.5 Flash → Answer + Sou
 
 ---
 
-## Setup
+## 🚀 Getting Started
 
-**1. Clone the repo**
+### Prerequisites
+- Python 3.10+
+- A Google AI Studio API Key for Gemini
+
+### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Bhushan-git20/pdf-rag-chatbot.git
 cd pdf-rag-chatbot
 ```
 
-**2. Install dependencies**
+### 2️⃣ Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-**3. Add your Gemini API key**
+### 3️⃣ Configure Environment Variables
+Copy the example environment file and add your API key:
 ```bash
 cp .env.example .env
-# Edit .env and paste your key
+```
+Open `.env` and paste your Gemini API key (get a free key at [aistudio.google.com](https://aistudio.google.com)):
+```env
+GOOGLE_API_KEY=your_gemini_key_here
 ```
 
-Get a free key at [aistudio.google.com](https://aistudio.google.com)
-
-**4. Run the app**
+### 4️⃣ Start the Application
 ```bash
 streamlit run app.py
 ```
+Your browser will automatically open to `http://localhost:8501`. Upload your PDFs in the sidebar, click process, and start chatting!
 
 ---
 
-## Screenshots
-
-> Coming soon
-
----
-
-## Author
-
-**Bhushan Damisetti**
-[LinkedIn](https://linkedin.com/in/bhushanam-damisetti) · [GitHub](https://github.com/Bhushan-git20)
+## 📜 License
+Educational and personal use. © 2026 Bhushan Damisetti.
