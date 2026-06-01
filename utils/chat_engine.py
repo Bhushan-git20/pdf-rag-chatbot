@@ -55,6 +55,10 @@ def handle_user_input(user_question: str):
     answer = response.get("answer", "Sorry, I couldn't find an answer.")
     source_docs = response.get("source_documents", [])
 
+    # Fallback when retriever finds nothing
+    if not source_docs:
+        answer = "I couldn't find relevant information in the uploaded documents to answer this question. Try rephrasing or check if the topic is covered in your PDFs."
+
     # Deduplicate sources
     sources = list(dict.fromkeys([
         doc.metadata.get("source", "Unknown source")

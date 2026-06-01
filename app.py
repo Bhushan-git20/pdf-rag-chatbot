@@ -75,11 +75,16 @@ def main():
         if st.button("Process PDFs", type="primary", use_container_width=True):
             if uploaded_files:
                 with st.spinner("Processing PDFs..."):
-                    vectorstore = process_pdfs(uploaded_files)
-                    st.session_state.conversation = get_conversation_chain(vectorstore)
-                    st.session_state.processed = True
-                    st.session_state.chat_history = []
-                st.success(f"✅ {len(uploaded_files)} PDF(s) processed!")
+                    try:
+                        vectorstore = process_pdfs(uploaded_files)
+                        st.session_state.conversation = get_conversation_chain(vectorstore)
+                        st.session_state.processed = True
+                        st.session_state.chat_history = []
+                        st.success(f"✅ {len(uploaded_files)} PDF(s) processed!")
+                    except ValueError as e:
+                        st.error(f"❌ Could not process PDFs: {e}")
+                    except Exception as e:
+                        st.error(f"❌ Unexpected error: {e}")
             else:
                 st.warning("Please upload at least one PDF.")
 
