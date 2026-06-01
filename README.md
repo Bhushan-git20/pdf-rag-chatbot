@@ -70,6 +70,7 @@ The application has been heavily stress-tested to ensure production-grade reliab
 - **Volume Overload:** Tested with ~140,000 characters (167 chunks) across multiple files. The `RecursiveCharacterTextSplitter` handled boundaries flawlessly without memory leaks, maintaining a fast retrieval time of **~2.48s**.
 - **Hallucination Resistance:** When given irrelevant queries, the fallback mechanism safely refuses to answer instead of fabricating facts, ensuring high fidelity.
 - **Adversarial Inputs:** Safely catches `ValueError` for empty/image-only PDFs and `PyPDF2` exceptions for corrupted or non-PDF binary files, presenting a friendly UI error instead of crashing.
+- **Security & UI Hardening:** Defends against HTML/Script injection attacks via strict sanitization of message and source rendering, and robustly handles API layer exceptions (e.g., rate limits) with explicit, non-destructive UI error banners.
 - **Accuracy:** The `sentence-transformers/all-MiniLM-L6-v2` model successfully returns correct Top-4 (`k=4`) chunks for specific factual queries in **~1.57s**.
 
 ---

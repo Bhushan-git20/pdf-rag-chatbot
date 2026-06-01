@@ -1,8 +1,10 @@
 import os
+import logging
 import streamlit as st
 from langchain_classic.chains import ConversationalRetrievalChain
 from langchain_classic.memory import ConversationBufferMemory
 from langchain_google_genai import ChatGoogleGenerativeAI
+from google.api_core.exceptions import GoogleAPIError
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -44,13 +46,16 @@ def handle_user_input(user_question: str):
         st.error("No conversation chain found. Please process PDFs first.")
         return
 
-    response = st.session_state.conversation({
-        "question": user_question,
-        "chat_history": [
-            (msg["content"], st.session_state.chat_history[i + 1]["content"])
-            for i, msg in enumerate(st.session_state.chat_history[:-1:2])
-        ] if st.session_state.chat_history else []
-    })
+    try:
+        response = st.session_state.conversation.invoke({
+            "question": user_question
+        })
+    except GoogleAPIError as api_err:
+        logging.error(f"Google API Error: {api_err}", exc_info=True)
+        raise RuntimeError(f"API Error: {str(api_err)}") from api_err
+    except Exception as e:
+        logging.error(f"Unexpected error during LLM invocation: {e}", exc_info=True)
+        raise RuntimeError(f"An unexpected error occurred: {str(e)}") from e
 
     answer = response.get("answer", "Sorry, I couldn't find an answer.")
     source_docs = response.get("source_documents", [])

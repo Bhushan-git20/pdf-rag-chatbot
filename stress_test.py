@@ -40,7 +40,11 @@ def create_pdf_with_text(text):
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(0, 10, txt=text)
     
-    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    out = pdf.output(dest='S')
+    if isinstance(out, (bytes, bytearray)):
+        pdf_bytes = bytes(out)
+    else:
+        pdf_bytes = out.encode('latin1')
     return io.BytesIO(pdf_bytes)
 
 def create_empty_pdf():
