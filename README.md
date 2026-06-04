@@ -54,12 +54,43 @@ pdf-rag-chatbot/
     └── chat_engine.py     # LangChain conversational chain and Gemini integration
 ```
 
-**RAG Pipeline Flow:**
+**RAG Pipeline Architecture:**
+```mermaid
+graph TD
+    A[User Uploads PDF] --> B[PyPDF2 Text Extraction]
+    B --> C[Recursive Character Splitter]
+    C --> D[HuggingFace Embeddings all-MiniLM-L6-v2]
+    D --> E[(ChromaDB Local Vector Store)]
+    
+    F[User Question] --> G[LangChain Retriever]
+    E --> G
+    G --> H[Top-K Chunks]
+    H --> I[Gemini 2.5 Flash LLM]
+    F --> I
+    I --> J[Response + Source Attributions]
 ```
-PDF Upload → Text Extraction → Chunking → Embedding → ChromaDB
-                                                           ↓
-User Question → Retriever (top-4 chunks) → Gemini 2.5 Flash → Answer + Sources
+
+---
+
+## 💻 Sample Integration / API Calls
+
+While primarily a Streamlit app, the underlying logic can be queried via standard Python integrations. Here is an example of querying the document processing backend directly:
+
+```python
+from utils.chat_engine import get_response
+from utils.pdf_processor import process_documents
+
+# 1. Process documents into ChromaDB
+process_documents(["sample_docs/report.pdf"])
+
+# 2. Query the Knowledge Base
+question = "What are the key findings?"
+response, sources = get_response(question, chat_history=[])
+
+print("AI:", response)
+print("Sources:", [doc.page_content for doc in sources])
 ```
+
 
 ---
 
