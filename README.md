@@ -113,18 +113,7 @@ The application has been heavily stress-tested to ensure production-grade reliab
 
 ---
 
-## 📊 RAGAS Evaluation & Metrics
 
-The retrieval and generation pipeline has been rigorously evaluated using the **RAGAS** framework to ensure zero hallucination and high-quality responses. Because true reliability is measured without "grading our own homework," we focus strictly on **Faithfulness** and **Answer Relevance**.
-
-| Metric | Score | Description |
-|---|---|---|
-| **Faithfulness** | **0.91** | Measures how accurately the LLM's answer is derived from the retrieved context without hallucinating external facts. |
-| **Answer Relevance** | **0.87** | Measures how directly and completely the LLM answered the user's specific query. |
-
-*Evaluated on 15 questions across 3 domain PDFs.*
-
----
 
 ## 🚀 Getting Started
 
