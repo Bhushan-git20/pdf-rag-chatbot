@@ -67,18 +67,18 @@ def run_tests():
         pdf_stream = create_pdf_with_text("The secret password to the server is Banana123. The server IP is 192.168.1.100.")
         file1 = MockUploadedFile("secret.pdf", pdf_stream)
         
-        vectorstore = process_pdfs([file1])
-        log("Process Valid PDF", "PASS", f"Vectorstore created with {vectorstore._collection.count()} docs")
+        retriever = process_pdfs([file1])
+        log("Process Valid PDF", "PASS", "Retriever created successfully")
         
-        chain = get_conversation_chain(vectorstore)
+        chain = get_conversation_chain(retriever)
         log("Create Conversation Chain", "PASS", "Chain initialized successfully")
         
         print("-> Testing Relevant Query...")
         start_time = time.time()
-        res = chain({"question": "What is the secret password?", "chat_history": []})
+        res = chain.invoke({"input": "What is the secret password?", "chat_history": []})
         duration = time.time() - start_time
         answer = res.get("answer", "")
-        sources = res.get("source_documents", [])
+        sources = res.get("context", [])
         
         if "Banana123" in answer and len(sources) > 0:
             log("Relevant Query", "PASS", f"Got correct answer in {duration:.2f}s")
@@ -86,9 +86,9 @@ def run_tests():
             log("Relevant Query", "FAIL", f"Answer did not contain expected text. Answer: {answer}")
             
         print("-> Testing Irrelevant Query...")
-        res_irr = chain({"question": "What is the capital of France? Only answer from the context provided.", "chat_history": []})
+        res_irr = chain.invoke({"input": "What is the capital of France? Only answer from the context provided.", "chat_history": []})
         ans_irr = res_irr.get("answer", "")
-        src_irr = res_irr.get("source_documents", [])
+        src_irr = res_irr.get("context", [])
         
         if len(src_irr) == 0:
             log("Irrelevant Query (No sources)", "PASS", "Retriever found 0 sources as expected.")
@@ -102,7 +102,7 @@ def run_tests():
     print("\n--- Test 2: Empty PDF (Images only / No Extractable Text) ---")
     try:
         file2 = MockUploadedFile("empty.pdf", create_empty_pdf())
-        vectorstore = process_pdfs([file2])
+        retriever = process_pdfs([file2])
         log("Process Empty PDF", "FAIL", "Should have raised ValueError")
     except ValueError as e:
         log("Process Empty PDF", "PASS", f"Correctly caught: {str(e)}")
@@ -112,7 +112,7 @@ def run_tests():
     print("\n--- Test 3: Corrupt PDF / Non-PDF file ---")
     try:
         file3 = MockUploadedFile("corrupt.pdf", create_corrupt_pdf())
-        vectorstore = process_pdfs([file3])
+        retriever = process_pdfs([file3])
         log("Process Corrupt PDF", "FAIL", "Should have raised Exception")
     except Exception as e:
         log("Process Corrupt PDF", "PASS", f"Correctly caught exception during PDF read: {str(e)}")
@@ -124,15 +124,15 @@ def run_tests():
         file_small = MockUploadedFile("small.pdf", create_pdf_with_text("Just a small file with one sentence."))
         
         start_time = time.time()
-        vectorstore = process_pdfs([file_large, file_small])
+        retriever = process_pdfs([file_large, file_small])
         duration = time.time() - start_time
         
-        log("Process Large Volume PDFs", "PASS", f"Processed 2 files in {duration:.2f}s. Docs chunks in ChromaDB: {vectorstore._collection.count()}")
+        log("Process Large Volume PDFs", "PASS", f"Processed 2 files in {duration:.2f}s. Retriever initialized.")
         
         print("-> Testing Query on Large Volume...")
-        chain_large = get_conversation_chain(vectorstore)
+        chain_large = get_conversation_chain(retriever)
         start_time_q = time.time()
-        res_large = chain_large({"question": "What does the small file say?", "chat_history": []})
+        res_large = chain_large.invoke({"input": "What does the small file say?", "chat_history": []})
         dur_q = time.time() - start_time_q
         
         log("Query on Large Volume", "PASS", f"Answered in {dur_q:.2f}s. Answer: {res_large.get('answer','')}")
