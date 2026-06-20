@@ -121,7 +121,7 @@ def run_evaluation():
     
     print("4. Configuring RAGAS with Gemini...")
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GEMINI_API_KEY"))
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", google_api_key=os.getenv("GEMINI_API_KEY"))
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
     
     eval_llm = LangchainLLMWrapper(llm)
     eval_embeddings = LangchainEmbeddingsWrapper(embeddings)

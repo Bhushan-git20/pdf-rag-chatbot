@@ -4,9 +4,6 @@ import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core.exceptions import GoogleAPIError
 from dotenv import load_dotenv
-import time
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_google_genai.chat_models import ChatGoogleGenerativeAIError
 
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -129,5 +126,5 @@ def handle_user_input(user_question: str):
     st.session_state.chat_history.append({
         "role": "bot",
         "content": answer,
-        "sources": [{"chunk": doc.page_content, "source": doc.metadata.get("source", "Unknown"), "score": None} for doc in source_docs]
+        "sources": [{"chunk": doc.page_content, "source": doc.metadata.get("source", "Unknown"), "score": doc.metadata.get("relevance_score")} for doc in source_docs]
     })

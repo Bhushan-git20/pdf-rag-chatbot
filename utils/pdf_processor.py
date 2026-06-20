@@ -75,7 +75,7 @@ class ThreadSafeEmbeddings:
 def load_embeddings():
     """Load Google Generative AI embeddings model wrapped for thread safety."""
     return ThreadSafeEmbeddings(
-        model_name="models/gemini-embedding-001", 
+        model_name="models/text-embedding-004", 
         api_key=os.getenv("GEMINI_API_KEY")
     )
 
