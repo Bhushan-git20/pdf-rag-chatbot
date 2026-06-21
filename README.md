@@ -14,7 +14,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ![PDF RAG Chatbot Dashboard](screenshot.png)
 
-### 🔴 [Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot)
+## 🔴 [Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot)
 
 ---
 
@@ -30,18 +30,22 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 ## ✨ Comprehensive Feature Suite
 
 ### 📄 Intelligent Document Processing
+
 - **PyPDF2 Integration**: Efficiently extracts raw text from PDF files.
 - **Recursive Character Text Splitting**: Intelligently chunks large documents into smaller, overlapping segments so the AI doesn't lose context.
 
 ### 🧠 Semantic Search Engine
+
 - **Local Vector Database**: Utilizes ChromaDB to store and query document embeddings locally without expensive database overhead, combined with BM25 for sparse keyword search.
 - **High-Quality Embeddings**: Uses Google's `text-embedding-004` for highly accurate text vectorization, paired with `ms-marco-MiniLM-L-6-v2` for cross-encoder reranking.
 
 ### 💬 Conversational Interface
+
 - **Streamlit UI**: A clean, modern chat interface with custom CSS for user and bot message bubbles.
 - **Gemini 2.5 Flash**: Leverages Google's ultra-fast Gemini 2.5 Flash LLM to synthesize answers quickly based on retrieved context.
 
 ### 🛡️ Production-Ready Robustness
+
 - **Rate Limit Handling**: Implements `tenacity` for exponential backoff during embedding and inference to cleanly handle API limits (e.g., HTTP 429).
 - **Thread Safety**: Uses `threading.local()` to isolate vector embeddings per thread, preventing crashes during concurrent access in the Streamlit cloud environment.
 
@@ -50,7 +54,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 ## 🛠️ Technology Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | **Frontend UI** | Streamlit |
 | **LLM Inference** | Gemini 2.5 Flash (Google) |
 | **Embeddings** | Google (`text-embedding-004`) |
@@ -62,7 +66,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ## 📁 Code Structure & Architecture
 
-```
+```text
 pdf-rag-chatbot/
 ├── app.py                 # Main Streamlit application and UI definitions
 ├── requirements.txt       # Python dependencies
@@ -114,7 +118,6 @@ print("AI:", response)
 print("Sources:", [doc.page_content for doc in sources])
 ```
 
-
 ---
 
 ## 🔬 Deep Stress Testing & Robustness
@@ -128,8 +131,6 @@ The application has been heavily stress-tested to ensure production-grade reliab
 - **Accuracy:** The hybrid retrieval pipeline successfully filters the Top-3 chunks for specific factual queries.
 
 ---
-
-
 
 ## 🚀 Getting Started
 
