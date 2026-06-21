@@ -1,3 +1,13 @@
+---
+title: PDF RAG Chatbot
+emoji: 📚
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+app_file: app.py
+pinned: false
+---
+
 # PDF Q&A RAG Chatbot 📄🤖
 
 A conversational AI chatbot that answers questions from uploaded PDF documents using advanced Retrieval-Augmented Generation (RAG). Built entirely with Python, Streamlit, and LangChain, it provides an intuitive, ChatGPT-like interface where you can upload documents and instantly query their contents with accurate source attribution.
