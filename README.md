@@ -14,6 +14,8 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ![PDF RAG Chatbot Dashboard](screenshot.png)
 
+### 🔴 [Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot)
+
 ---
 
 ## 🚀 Vision & Key Highlights
@@ -38,6 +40,10 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 ### 💬 Conversational Interface
 - **Streamlit UI**: A clean, modern chat interface with custom CSS for user and bot message bubbles.
 - **Gemini 2.5 Flash**: Leverages Google's ultra-fast Gemini 2.5 Flash LLM to synthesize answers quickly based on retrieved context.
+
+### 🛡️ Production-Ready Robustness
+- **Rate Limit Handling**: Implements `tenacity` for exponential backoff during embedding and inference to cleanly handle API limits (e.g., HTTP 429).
+- **Thread Safety**: Uses `threading.local()` to isolate vector embeddings per thread, preventing crashes during concurrent access in the Streamlit cloud environment.
 
 ---
 
