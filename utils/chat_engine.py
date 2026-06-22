@@ -5,8 +5,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from google.api_core.exceptions import GoogleAPIError
 from dotenv import load_dotenv
 
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_classic.retrievers import ContextualCompressionRetriever
