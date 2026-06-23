@@ -8,7 +8,7 @@ app_file: app.py
 pinned: false
 ---
 
-# PDF Q&A RAG Chatbot 📄🤖
+## PDF Q&A RAG Chatbot 📄🤖
 
 A conversational AI chatbot that answers questions from uploaded PDF documents using advanced Retrieval-Augmented Generation (RAG). Built entirely with Python, Streamlit, and LangChain, it provides an intuitive, ChatGPT-like interface where you can upload documents and instantly query their contents with accurate source attribution.
 
@@ -191,4 +191,5 @@ Your browser will automatically open to `http://localhost:8501`. Upload your PDF
 ---
 
 ## 📜 License
+
 Educational and personal use. © 2026 Bhushan Damisetti.
