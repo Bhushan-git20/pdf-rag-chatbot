@@ -21,28 +21,29 @@ def load_cross_encoder():
     """Load the CrossEncoder model once and cache it."""
     return HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-MiniLM-L-6-v2")
 
-def get_conversation_chain(retriever):
+def get_conversation_chain(retriever, llm=None):
     """Build LCEL retrieval chain with Gemini 2.5 Flash and Reranker."""
-    # Primary LLM: Google Gemini
-    gemini_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        temperature=0.2, 
-        max_retries=2,
-        google_api_key=os.getenv("GEMINI_API_KEY")
-    )
-    
-    # Fallback LLM: Groq (Llama 3) if key exists
-    groq_key = os.getenv("GROQ_API_KEY")
-    if groq_key:
-        groq_llm = ChatGroq(
-            model_name="llama-3.3-70b-versatile",
-            temperature=0.2,
+    if llm is None:
+        # Primary LLM: Google Gemini
+        gemini_llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash", 
+            temperature=0.2, 
             max_retries=2,
-            api_key=groq_key
+            google_api_key=os.getenv("GEMINI_API_KEY")
         )
-        llm = gemini_llm.with_fallbacks([groq_llm])
-    else:
-        llm = gemini_llm
+        
+        # Fallback LLM: Groq (Llama 3) if key exists
+        groq_key = os.getenv("GROQ_API_KEY")
+        if groq_key:
+            groq_llm = ChatGroq(
+                model_name="llama-3.3-70b-versatile",
+                temperature=0.2,
+                max_retries=2,
+                api_key=groq_key
+            )
+            llm = gemini_llm.with_fallbacks([groq_llm])
+        else:
+            llm = gemini_llm
 
     # Reranker setup
     cross_encoder = load_cross_encoder()

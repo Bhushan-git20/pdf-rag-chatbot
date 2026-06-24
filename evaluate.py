@@ -19,7 +19,7 @@ sys.modules["langchain_community.chat_models.vertexai"] = mock_module
 
 from ragas import evaluate
 from ragas.run_config import RunConfig
-from ragas.metrics.collections import faithfulness, answer_relevancy
+from ragas.metrics import Faithfulness, AnswerRelevancy
 from langchain_groq import ChatGroq
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from ragas.llms import LangchainLLMWrapper
@@ -80,7 +80,10 @@ def run_evaluation():
     
     print("2. Processing PDFs & Initializing RAG Pipeline...")
     retriever = process_pdfs([f_pdf, h_pdf, e_pdf])
-    chain = get_conversation_chain(retriever)
+    
+    print("3. Querying RAG Pipeline (Fetching 15 answers)...")
+    groq_llm = ChatGroq(model_name="llama-3.1-8b-instant", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
+    chain = get_conversation_chain(retriever, llm=groq_llm)
     
     questions = []
     answers = []
@@ -100,7 +103,6 @@ def run_evaluation():
         answers.append(answer)
         contexts.append(source_texts)
         
-        time.sleep(15) # Prevent extreme rate limiting during generation
         
     dataset_dict = {
         "question": questions,
@@ -111,16 +113,14 @@ def run_evaluation():
     dataset = Dataset.from_dict(dataset_dict)
     
     print("4. Configuring RAGAS with Groq...")
-    llm = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", google_api_key=os.getenv("GEMINI_API_KEY"))
-    
-    eval_llm = LangchainLLMWrapper(llm)
+    eval_llm = LangchainLLMWrapper(groq_llm)
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
     eval_embeddings = LangchainEmbeddingsWrapper(embeddings)
     
     print("5. Running RAGAS Evaluation (Faithfulness & Answer Relevance)...")
     result = evaluate(
         dataset=dataset,
-        metrics=[faithfulness, answer_relevancy],
+        metrics=[Faithfulness(), AnswerRelevancy()],
         llm=eval_llm,
         embeddings=eval_embeddings,
         raise_exceptions=False,

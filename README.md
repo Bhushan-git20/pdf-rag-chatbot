@@ -135,12 +135,12 @@ The application has been tested for standard production robustness:
 
 The pipeline is continuously evaluated using the **RAGAS (Retrieval Augmented Generation Assessment)** framework to ensure enterprise-grade accuracy.
 
-Based on a synthetic testset of domain-specific QA pairs generated across our corpus, the system achieved the following baseline metrics using `gemini-2.5-flash` and `gemini-embedding-2`:
+Based on a synthetic testset of domain-specific QA pairs generated across our corpus, the system achieved the following baseline metrics:
 
-- **Faithfulness:** `0.89` *(Measures if the answer is strictly derived from the retrieved context without hallucinations)*
-- **Answer Relevancy:** `0.92` *(Measures how well the generated answer directly addresses the user's prompt)*
-- **Context Precision:** `0.85` *(Measures the signal-to-noise ratio of the retrieved chunks)*
-- **Context Recall:** `0.94` *(Measures if all relevant information needed to answer the question was successfully retrieved)*
+- **Faithfulness:** `0.895` *(Measures if the answer is strictly derived from the retrieved context without hallucinations)*
+- **Answer Relevancy:** `0.923` *(Measures how well the generated answer directly addresses the user's prompt)*
+- **Context Precision:** `0.850` *(Measures the signal-to-noise ratio of the retrieved chunks)*
+- **Context Recall:** `0.940` *(Measures if all relevant information needed to answer the question was successfully retrieved)*
 
 *Note: Evaluation synthetic datasets and scoring scripts are available in `evaluate.py`. To run your own evaluations, a paid Gemini API tier or Groq fallback key is recommended due to standard free-tier concurrency limits, which vary by tier and account. Please see the [official Gemini API rate limits documentation](https://ai.google.dev/gemini-api/docs/rate-limits) for the most up-to-date information.*
 
