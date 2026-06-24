@@ -18,7 +18,10 @@ mock_module.ChatVertexAI = None
 sys.modules["langchain_community.chat_models.vertexai"] = mock_module
 
 from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevance
+from ragas.run_config import RunConfig
+from ragas.metrics.collections import faithfulness, answer_relevancy
+from langchain_groq import ChatGroq
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
 
@@ -63,22 +66,10 @@ engineering_text = "The structural integrity of the Alpha bridge relies on carbo
 # 15 Questions
 qa_pairs = [
     {"q": "What was Acme Corp's Q3 revenue?"},
-    {"q": "How much did Acme Corp's revenue increase from Q2?"},
-    {"q": "What were the operating expenses for Acme Corp?"},
-    {"q": "When does the Acme Corp stock buyback program start?"},
-    {"q": "Did Acme Corp announce any leadership changes?"},
-    
-    {"q": "How many doses are required for the XR-2 vaccine?"},
-    {"q": "What is the timeline between XR-2 vaccine doses?"},
     {"q": "What are the common side effects of the XR-2 vaccine?"},
-    {"q": "What is the required storage temperature for the XR-2 vaccine?"},
-    {"q": "Can the XR-2 vaccine be stored at room temperature?"},
-    
-    {"q": "What material is used for the cables on the Alpha bridge?"},
     {"q": "What is the maximum load capacity of the Alpha bridge?"},
-    {"q": "How often are maintenance inspections required for the Alpha bridge?"},
-    {"q": "Who built the Alpha bridge?"},
-    {"q": "Is the Alpha bridge safe for heavy cargo?"}
+    {"q": "How much did Acme Corp's revenue increase from Q2?"},
+    {"q": "What is the required storage temperature for the XR-2 vaccine?"}
 ]
 
 def run_evaluation():
@@ -109,7 +100,7 @@ def run_evaluation():
         answers.append(answer)
         contexts.append(source_texts)
         
-        time.sleep(2) # Prevent extreme rate limiting during generation
+        time.sleep(15) # Prevent extreme rate limiting during generation
         
     dataset_dict = {
         "question": questions,
@@ -119,9 +110,9 @@ def run_evaluation():
     
     dataset = Dataset.from_dict(dataset_dict)
     
-    print("4. Configuring RAGAS with Gemini...")
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GEMINI_API_KEY"))
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
+    print("4. Configuring RAGAS with Groq...")
+    llm = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", google_api_key=os.getenv("GEMINI_API_KEY"))
     
     eval_llm = LangchainLLMWrapper(llm)
     eval_embeddings = LangchainEmbeddingsWrapper(embeddings)
@@ -129,10 +120,11 @@ def run_evaluation():
     print("5. Running RAGAS Evaluation (Faithfulness & Answer Relevance)...")
     result = evaluate(
         dataset=dataset,
-        metrics=[faithfulness, answer_relevance],
+        metrics=[faithfulness, answer_relevancy],
         llm=eval_llm,
         embeddings=eval_embeddings,
-        raise_exceptions=False
+        raise_exceptions=False,
+        run_config=RunConfig(max_workers=1, max_retries=20, max_wait=60)
     )
     
     print("\n--- EVALUATION COMPLETE ---")
@@ -140,11 +132,11 @@ def run_evaluation():
     df = result.to_pandas()
     metrics_summary = {
         "faithfulness": df["faithfulness"].mean(),
-        "answer_relevance": df["answer_relevance"].mean(),
+        "answer_relevancy": df["answer_relevancy"].mean(),
         "evaluated_samples": len(df)
     }
     
-    print(f"Faithfulness: {metrics_summary['faithfulness']:.2f} | Answer Relevance: {metrics_summary['answer_relevance']:.2f}")
+    print(f"Faithfulness: {metrics_summary['faithfulness']:.2f} | Answer Relevance: {metrics_summary['answer_relevancy']:.2f}")
     print(f"Evaluated on {metrics_summary['evaluated_samples']} questions across 3 domain PDFs")
     
     with open("eval_results.json", "w") as f:

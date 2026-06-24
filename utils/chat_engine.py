@@ -2,15 +2,16 @@ import os
 import logging
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from google.api_core.exceptions import GoogleAPIError
 from dotenv import load_dotenv
 
-from langchain_classic.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_classic.retrievers import ContextualCompressionRetriever
-from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import CrossEncoderReranker
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 
 load_dotenv()
@@ -22,11 +23,26 @@ def load_cross_encoder():
 
 def get_conversation_chain(retriever):
     """Build LCEL retrieval chain with Gemini 2.5 Flash and Reranker."""
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        google_api_key=os.getenv("GEMINI_API_KEY"),
-        temperature=0.3
+    # Primary LLM: Google Gemini
+    gemini_llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash", 
+        temperature=0.2, 
+        max_retries=2,
+        google_api_key=os.getenv("GEMINI_API_KEY")
     )
+    
+    # Fallback LLM: Groq (Llama 3) if key exists
+    groq_key = os.getenv("GROQ_API_KEY")
+    if groq_key:
+        groq_llm = ChatGroq(
+            model_name="llama-3.3-70b-versatile",
+            temperature=0.2,
+            max_retries=2,
+            api_key=groq_key
+        )
+        llm = gemini_llm.with_fallbacks([groq_llm])
+    else:
+        llm = gemini_llm
 
     # Reranker setup
     cross_encoder = load_cross_encoder()
