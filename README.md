@@ -77,6 +77,7 @@ pdf-rag-chatbot/
 ```
 
 **RAG Pipeline Architecture:**
+
 ```mermaid
 graph TD
     A[User Uploads PDF] --> B[PyPDF2 Text Extraction]
@@ -141,41 +142,50 @@ Based on a synthetic testset of domain-specific QA pairs generated across our co
 - **Context Precision:** `0.85` *(Measures the signal-to-noise ratio of the retrieved chunks)*
 - **Context Recall:** `0.94` *(Measures if all relevant information needed to answer the question was successfully retrieved)*
 
-*Note: Evaluation synthetic datasets and scoring scripts are available in `evaluate.py`. To run your own evaluations, a paid Gemini API tier or Groq fallback key is recommended due to standard free-tier concurrency limits (5 RPM).*
+*Note: Evaluation synthetic datasets and scoring scripts are available in `evaluate.py`. To run your own evaluations, a paid Gemini API tier or Groq fallback key is recommended due to standard free-tier concurrency limits, which vary by tier and account. Please see the [official Gemini API rate limits documentation](https://ai.google.dev/gemini-api/docs/rate-limits) for the most up-to-date information.*
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Python 3.10+
 - A Google AI Studio API Key for Gemini
 
 ### 1️⃣ Clone the Repository
+
 ```bash
 git clone https://github.com/Bhushan-git20/pdf-rag-chatbot.git
 cd pdf-rag-chatbot
 ```
 
 ### 2️⃣ Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3️⃣ Configure Environment Variables
+
 Copy the example environment file and add your API key:
+
 ```bash
 cp .env.example .env
 ```
+
 Open `.env` and paste your Gemini API key (get a free key at [aistudio.google.com](https://aistudio.google.com)):
+
 ```env
 GEMINI_API_KEY=your_gemini_key_here
 ```
 
 ### 4️⃣ Start the Application
+
 ```bash
 streamlit run app.py
 ```
+
 Your browser will automatically open to `http://localhost:8501`. Upload your PDFs in the sidebar, click process, and start chatting!
 
 ---
