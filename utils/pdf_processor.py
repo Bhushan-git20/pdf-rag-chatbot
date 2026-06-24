@@ -3,7 +3,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.retrievers import BM25Retriever
-from langchain_classic.retrievers import EnsembleRetriever
+from langchain.retrievers import EnsembleRetriever
 from langchain_core.documents import Document
 import streamlit as st
 import os
@@ -75,7 +75,7 @@ class ThreadSafeEmbeddings:
 def load_embeddings():
     """Load Google Generative AI embeddings model wrapped for thread safety."""
     return ThreadSafeEmbeddings(
-        model_name="models/text-embedding-004", 
+        model_name="models/gemini-embedding-2", 
         api_key=os.getenv("GEMINI_API_KEY")
     )
 
