@@ -22,7 +22,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 - **Multi-Document Analysis**: Upload one or multiple PDFs at once. The system seamlessly aggregates the text and builds a unified knowledge base.
 - **Accurate Retrieval**: Uses Google Embeddings, BM25 Hybrid Search, and a CrossEncoder Reranker for high-performance, hallucination-resistant retrieval.
-- **Source Attribution**: Every AI response includes a toggleable "Sources" section showing exactly which paragraphs from your PDFs were used to formulate the answer, complete with confidence scores.
+- **Source Attribution**: Every AI response includes a toggleable "Sources" section showing exactly which paragraphs from your PDFs were used to formulate the answer.
 - **Conversational Memory**: Maintains chat history using LangChain LCEL, allowing you to ask follow-up questions contextually, just like ChatGPT.
 
 ---
@@ -31,7 +31,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ### 📄 Intelligent Document Processing
 
-- **PyPDF2 Integration**: Efficiently extracts raw text from PDF files.
+- **pypdf Integration**: Efficiently extracts raw text from PDF files.
 - **Recursive Character Text Splitting**: Intelligently chunks large documents into smaller, overlapping segments so the AI doesn't lose context.
 
 ### 🧠 Semantic Search Engine
@@ -60,7 +60,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 | **Embeddings** | Google (`text-embedding-004`) |
 | **Vector Store** | ChromaDB + BM25 (Hybrid) |
 | **Orchestration** | LangChain LCEL (Reranker + Hybrid Search) |
-| **PDF Parsing** | PyPDF2 |
+| **PDF Parsing** | pypdf |
 
 ---
 
@@ -80,7 +80,7 @@ pdf-rag-chatbot/
 
 ```mermaid
 graph TD
-    A[User Uploads PDF] --> B[PyPDF2 Text Extraction]
+    A[User Uploads PDF] --> B[pypdf Text Extraction]
     B --> C[Recursive Character Splitter]
     C --> D[Google text-embedding-004]
     D --> E[(ChromaDB Dense Index)]
@@ -121,13 +121,13 @@ print("Sources:", [doc.page_content for doc in sources])
 
 ---
 
-## 🔬 Deep Stress Testing & Robustness
+## ⚠️ Error Handling & Edge Cases
 
-The application has been tested for standard production robustness:
+The application includes standard exception handling for common RAG scenarios:
 
-- **Hallucination Resistance:** When given irrelevant queries, the fallback mechanism safely refuses to answer instead of fabricating facts, ensuring high fidelity.
-- **Adversarial Inputs:** Safely catches `ValueError` for empty/image-only PDFs and `PyPDF2` exceptions for corrupted or non-PDF binary files, presenting a friendly UI error instead of crashing.
-- **Security & UI Hardening:** Defends against HTML/Script injection attacks via strict sanitization of message and source rendering, and robustly handles API layer exceptions (e.g., rate limits) with explicit, non-destructive UI error banners.
+- **Irrelevant Queries:** Instructed via prompt engineering to refuse answering if the context does not contain the answer, minimizing hallucinations.
+- **File Parsing:** Catches `ValueError` for empty or image-only PDFs, and `pypdf` exceptions for corrupted binary files, displaying a UI warning.
+- **API Limits:** Uses `tenacity` to handle rate limits and standard network exceptions gracefully without crashing the Streamlit session.
 
 ---
 
