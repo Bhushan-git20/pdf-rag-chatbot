@@ -12,3 +12,9 @@ venv/
 env/
 .DS_Store
 .vscode/
+
+# IDE & Artifacts
+.planning/
+DECISIONS.md
+stress_test.py
+eval_results.json
