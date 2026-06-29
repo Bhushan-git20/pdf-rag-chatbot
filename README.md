@@ -14,7 +14,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ![PDF RAG Chatbot Dashboard](screenshot.png)
 
-## 🔴 [Live Demo on Hugging Face Spaces](https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot)
+**🔴 Live Demo on Hugging Face Spaces:** https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot
 
 ---
 
