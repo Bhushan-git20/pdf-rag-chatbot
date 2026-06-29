@@ -42,7 +42,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 ### 💬 Conversational Interface
 
 - **Streamlit UI**: A clean, modern chat interface with custom CSS for user and bot message bubbles.
-- **Gemini 2.5 Flash**: Leverages Google's ultra-fast Gemini 2.5 Flash LLM to synthesize answers quickly based on retrieved context.
+- **Gemini 2.5 Flash & Groq Fallback**: Leverages Google's ultra-fast Gemini 2.5 Flash LLM to synthesize answers quickly, with an automatic fallback to Groq (Llama-3.3-70b-versatile) for high availability.
 
 ### 🛡️ Production-Ready Robustness
 
@@ -56,7 +56,7 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 | Layer | Technology |
 | --- | --- |
 | **Frontend UI** | Streamlit |
-| **LLM Inference** | Gemini 2.5 Flash (Google) |
+| **LLM Inference** | Gemini 2.5 Flash (Primary) + Groq Llama-3.3-70b (Fallback) |
 | **Embeddings** | Google (`text-embedding-004`) |
 | **Vector Store** | ChromaDB + BM25 (Hybrid) |
 | **Orchestration** | LangChain LCEL (Reranker + Hybrid Search) |
@@ -137,6 +137,7 @@ The application includes standard exception handling for common RAG scenarios:
 
 - Python 3.10+
 - A Google AI Studio API Key for Gemini
+- (Optional) A Groq API Key for the Llama-3.3-70b fallback model
 
 ### 1️⃣ Clone the Repository
 
@@ -163,6 +164,7 @@ Open `.env` and paste your Gemini API key (get a free key at [aistudio.google.co
 
 ```env
 GEMINI_API_KEY=your_gemini_key_here
+GROQ_API_KEY=your_groq_key_here
 ```
 
 ### 4️⃣ Start the Application
