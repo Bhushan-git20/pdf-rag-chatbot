@@ -22,8 +22,7 @@ from ragas.run_config import RunConfig
 from ragas.metrics import Faithfulness, AnswerRelevancy
 from langchain_groq import ChatGroq
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from ragas.llms import LangchainLLMWrapper
-from ragas.embeddings import LangchainEmbeddingsWrapper
+
 
 from utils.pdf_processor import process_pdfs
 from utils.chat_engine import get_conversation_chain
@@ -69,7 +68,17 @@ qa_pairs = [
     {"q": "What are the common side effects of the XR-2 vaccine?"},
     {"q": "What is the maximum load capacity of the Alpha bridge?"},
     {"q": "How much did Acme Corp's revenue increase from Q2?"},
-    {"q": "What is the required storage temperature for the XR-2 vaccine?"}
+    {"q": "What is the required storage temperature for the XR-2 vaccine?"},
+    {"q": "By how much were operating expenses reduced for Acme Corp?"},
+    {"q": "When is the new stock buyback program starting?"},
+    {"q": "How many doses does the new XR-2 vaccine require?"},
+    {"q": "How many days must separate the doses of the XR-2 vaccine?"},
+    {"q": "What material is used for the cables of the Alpha bridge?"},
+    {"q": "How often are maintenance inspections required for the Alpha bridge?"},
+    {"q": "Who announced the new stock buyback program?"},
+    {"q": "Which bridge relies on carbon-fiber reinforced steel cables?"},
+    {"q": "What are the storage requirements for the XR-2 vaccine?"},
+    {"q": "What company's revenue increased by 12% from Q2?"}
 ]
 
 def run_evaluation():
@@ -112,15 +121,23 @@ def run_evaluation():
     
     dataset = Dataset.from_dict(dataset_dict)
     
-    print("4. Configuring RAGAS with Groq...")
-    eval_llm = LangchainLLMWrapper(groq_llm)
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
-    eval_embeddings = LangchainEmbeddingsWrapper(embeddings)
+    print("4. Configuring RAGAS with Groq (Modern API)...")
+    from openai import OpenAI
+    from ragas.llms import llm_factory
+    from ragas.embeddings import HuggingFaceEmbeddings as RagasHFEmbeddings
+    
+    groq_client = OpenAI(
+        api_key=os.getenv("GROQ_API_KEY"),
+        base_url="https://api.groq.com/openai/v1"
+    )
+    
+    eval_llm = llm_factory("llama-3.1-8b-instant", client=groq_client)
+    eval_embeddings = RagasHFEmbeddings(model="all-MiniLM-L6-v2")
     
     print("5. Running RAGAS Evaluation (Faithfulness & Answer Relevance)...")
     result = evaluate(
         dataset=dataset,
-        metrics=[Faithfulness(), AnswerRelevancy()],
+        metrics=[Faithfulness(llm=eval_llm), AnswerRelevancy(llm=eval_llm, embeddings=eval_embeddings)],
         llm=eval_llm,
         embeddings=eval_embeddings,
         raise_exceptions=False,

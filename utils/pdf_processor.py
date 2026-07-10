@@ -2,8 +2,7 @@ from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+
 from langchain_core.documents import Document
 import streamlit as st
 import os
@@ -73,11 +72,9 @@ class ThreadSafeEmbeddings:
 
 @st.cache_resource(show_spinner=False)
 def load_embeddings():
-    """Load Google Generative AI embeddings model wrapped for thread safety."""
-    return ThreadSafeEmbeddings(
-        model_name="models/text-embedding-004", 
-        api_key=os.getenv("GEMINI_API_KEY")
-    )
+    """Load HuggingFace embeddings model wrapped for thread safety."""
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 
 def process_pdfs(uploaded_files):
@@ -96,6 +93,10 @@ def process_pdfs(uploaded_files):
     )
     
     dense_retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
+    
+    from langchain_community.retrievers import BM25Retriever
+    from langchain.retrievers import EnsembleRetriever
+    
     sparse_retriever = BM25Retriever.from_documents(lc_docs)
     sparse_retriever.k = 8
     

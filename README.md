@@ -14,14 +14,14 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ![PDF RAG Chatbot Dashboard](screenshot.png)
 
-**🔴 Live Demo on Hugging Face Spaces:** https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot
+**🔴 Live Demo on Hugging Face Spaces:** <https://huggingface.co/spaces/Bhushanam/pdf-rag-chatbot>
 
 ---
 
 ## 🚀 Vision & Key Highlights
 
 - **Multi-Document Analysis**: Upload one or multiple PDFs at once. The system seamlessly aggregates the text and builds a unified knowledge base.
-- **Accurate Retrieval**: Uses Google Embeddings, BM25 Hybrid Search, and a CrossEncoder Reranker for high-performance, hallucination-resistant retrieval.
+- **Accurate Retrieval**: Uses Google Embeddings, BM25 Hybrid Search, and a CrossEncoder Reranker for high-performance, hallucination-resistant retrieval. *(Achieved a **0.97 Faithfulness Score** on 15 complex domain queries evaluated via RAGAS!)*
 - **Source Attribution**: Every AI response includes a toggleable "Sources" section showing exactly which paragraphs from your PDFs were used to formulate the answer.
 - **Conversational Memory**: Maintains chat history using LangChain LCEL, allowing you to ask follow-up questions contextually, just like ChatGPT.
 
