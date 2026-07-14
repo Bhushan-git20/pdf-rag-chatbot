@@ -72,9 +72,20 @@ class ThreadSafeEmbeddings:
 
 @st.cache_resource(show_spinner=False)
 def load_embeddings():
-    """Load HuggingFace embeddings model wrapped for thread safety."""
-    from langchain_community.embeddings import HuggingFaceEmbeddings
-    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    """Load embeddings with a fallback mechanism."""
+    try:
+        # Attempt to use Gemini Embeddings (requires specific key permissions)
+        embed = GoogleGenerativeAIEmbeddings(
+            model="models/text-embedding-004", 
+            google_api_key=os.getenv("GEMINI_API_KEY")
+        )
+        # Test the embedding to see if it throws a 404
+        embed.embed_query("test")
+        return ThreadSafeEmbeddings(model_name="models/text-embedding-004", api_key=os.getenv("GEMINI_API_KEY"))
+    except Exception as e:
+        # Fallback to local HuggingFace embeddings
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 
 def process_pdfs(uploaded_files):

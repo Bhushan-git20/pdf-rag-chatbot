@@ -1,6 +1,11 @@
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+# SQLite hack for ChromaDB on HF Spaces / Streamlit Cloud
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import html
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
