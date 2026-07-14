@@ -1,3 +1,4 @@
+import logging
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
@@ -14,14 +15,21 @@ def extract_text_from_pdfs(uploaded_files):
     """Extract raw text from uploaded PDF files."""
     all_text = []
     for pdf_file in uploaded_files:
-        reader = PdfReader(pdf_file)
-        for page_num, page in enumerate(reader.pages):
-            text = page.extract_text()
-            if text:
-                all_text.append({
-                    "text": text,
-                    "source": f"{pdf_file.name} (Page {page_num + 1})"
-                })
+        try:
+            reader = PdfReader(pdf_file)
+            for page_num, page in enumerate(reader.pages):
+                try:
+                    text = page.extract_text()
+                    if text:
+                        all_text.append({
+                            "text": text,
+                            "source": f"{pdf_file.name} (Page {page_num + 1})"
+                        })
+                except Exception as e:
+                    logging.warning(f"Error extracting text from page {page_num + 1} of {pdf_file.name}: {e}")
+        except Exception as e:
+            logging.error(f"Error reading PDF file {pdf_file.name}: {e}")
+            
     return all_text
 
 
@@ -84,6 +92,7 @@ def load_embeddings():
         return ThreadSafeEmbeddings(model_name="models/text-embedding-004", api_key=os.getenv("GEMINI_API_KEY"))
     except Exception as e:
         # Fallback to local HuggingFace embeddings
+        logging.warning(f"Gemini embedding initialization failed: {e}. Falling back to local HuggingFace embeddings.")
         from langchain_community.embeddings import HuggingFaceEmbeddings
         return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 

@@ -94,6 +94,18 @@ def run_evaluation():
     groq_llm = ChatGroq(model_name="llama-3.1-8b-instant", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
     chain = get_conversation_chain(retriever, llm=groq_llm)
     
+    print("4. Configuring RAGAS with Groq...")
+    eval_llm = LangchainLLMWrapper(groq_llm)
+    try:
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
+        embeddings.embed_query("test")
+    except Exception as e:
+        print(f"Warning: Gemini embedding initialization failed: {e}. Falling back to local HuggingFace embeddings.")
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        
+    eval_embeddings = LangchainEmbeddingsWrapper(embeddings)
+    
     questions = []
     answers = []
     contexts = []
