@@ -126,3 +126,38 @@ def process_pdfs(uploaded_files):
     )
     
     return ensemble_retriever
+
+def build_retrievers(uploaded_files):
+    """Build dense, sparse, and ensemble retrievers for ablation evaluation."""
+    raw_texts = extract_text_from_pdfs(uploaded_files)
+    if not raw_texts:
+        raise ValueError("No text extracted from PDFs. Check if files are scanned images.")
+
+    lc_docs = split_documents(raw_texts)
+    embeddings = load_embeddings()
+
+    vectorstore = Chroma.from_documents(
+        documents=lc_docs,
+        embedding=embeddings,
+        collection_name="pdf_ablation_collection"
+    )
+    
+    dense_retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
+    
+    from langchain_community.retrievers import BM25Retriever
+    from langchain.retrievers import EnsembleRetriever
+    
+    sparse_retriever = BM25Retriever.from_documents(lc_docs)
+    sparse_retriever.k = 8
+    
+    ensemble_retriever = EnsembleRetriever(
+        retrievers=[dense_retriever, sparse_retriever],
+        weights=[0.6, 0.4]
+    )
+    
+    return {
+        "dense": dense_retriever,
+        "sparse": sparse_retriever,
+        "ensemble": ensemble_retriever,
+        "docs": lc_docs
+    }

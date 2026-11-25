@@ -18,3 +18,4 @@ env/
 DECISIONS.md
 stress_test.py
 eval_results.json
+.pytest_cache/

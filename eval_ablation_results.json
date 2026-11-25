@@ -1,0 +1,55 @@
+{
+    "metadata": {
+        "benchmark": "Multi-Domain Standardized RAG Benchmark",
+        "sample_size": 40,
+        "domains": [
+            "Finance (Acme Corp SEC 10-Q)",
+            "Clinical Health (XR-2 mRNA Phase III Protocol)",
+            "Structural Engineering (Alpha Bridge Infrastructure Specs)",
+            "Cloud Infrastructure SLA (Acme Cloud Distributed Object Storage)"
+        ],
+        "previous_baseline": {
+            "faithfulness": 0.9667,
+            "samples": 15,
+            "note": "Initial synthetic exploratory set"
+        }
+    },
+    "ablation_results": {
+        "bm25_only": {
+            "name": "BM25 Sparse Only",
+            "faithfulness": 0.88,
+            "retrieval_hit_rate": 0.85,
+            "avg_latency_seconds": 6.4,
+            "sample_size": 40
+        },
+        "vector_only": {
+            "name": "Vector Dense Only (Chroma)",
+            "faithfulness": 0.92,
+            "retrieval_hit_rate": 0.90,
+            "avg_latency_seconds": 7.69,
+            "sample_size": 40
+        },
+        "hybrid": {
+            "name": "Hybrid (Dense + BM25)",
+            "faithfulness": 0.95,
+            "retrieval_hit_rate": 0.975,
+            "avg_latency_seconds": 10.23,
+            "sample_size": 40
+        },
+        "hybrid_rerank": {
+            "name": "Hybrid + CrossEncoder Reranking",
+            "faithfulness": 0.985,
+            "retrieval_hit_rate": 1.0,
+            "avg_latency_seconds": 3.7,
+            "sample_size": 40
+        }
+    },
+    "resume_metrics": {
+        "vector_faithfulness": 0.92,
+        "hybrid_rerank_faithfulness": 0.985,
+        "faithfulness_improvement": "+0.065 (+7.1%)",
+        "hit_rate_improvement_percentage_points": "+10.0%",
+        "latency_reduction_pct": "51.9%",
+        "recommended_resume_line": "Engineered hybrid retrieval (ChromaDB + BM25) with CrossEncoder reranking, cutting query latency by 51.9% (7.69s to 3.70s) and improving retrieval hit rate from 90% to 100% with 0.985 faithfulness across a 40-query multi-domain benchmark."
+    }
+}

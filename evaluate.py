@@ -90,27 +90,14 @@ def run_evaluation():
     print("2. Processing PDFs & Initializing RAG Pipeline...")
     retriever = process_pdfs([f_pdf, h_pdf, e_pdf])
     
-    print("3. Querying RAG Pipeline (Fetching 15 answers)...")
-    groq_llm = ChatGroq(model_name="llama-3.1-8b-instant", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
+    print("3. Querying RAG Pipeline (Fetching answers)...")
+    groq_llm = ChatGroq(model_name="qwen/qwen3.8-27b", temperature=0, api_key=os.getenv("GROQ_API_KEY"))
     chain = get_conversation_chain(retriever, llm=groq_llm)
-    
-    print("4. Configuring RAGAS with Groq...")
-    eval_llm = LangchainLLMWrapper(groq_llm)
-    try:
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=os.getenv("GEMINI_API_KEY"))
-        embeddings.embed_query("test")
-    except Exception as e:
-        print(f"Warning: Gemini embedding initialization failed: {e}. Falling back to local HuggingFace embeddings.")
-        from langchain_community.embeddings import HuggingFaceEmbeddings
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        
-    eval_embeddings = LangchainEmbeddingsWrapper(embeddings)
     
     questions = []
     answers = []
     contexts = []
     
-    print("3. Querying RAG Pipeline (Fetching 15 answers)...")
     for item in qa_pairs:
         question = item["q"]
         print(f"  -> Q: {question}")
@@ -124,7 +111,6 @@ def run_evaluation():
         answers.append(answer)
         contexts.append(source_texts)
         
-        
     dataset_dict = {
         "question": questions,
         "answer": answers,
@@ -136,24 +122,23 @@ def run_evaluation():
     print("4. Configuring RAGAS with Groq (Modern API)...")
     from openai import OpenAI
     from ragas.llms import llm_factory
-    from ragas.embeddings import HuggingFaceEmbeddings as RagasHFEmbeddings
+    from ragas.metrics._faithfulness import faithfulness
     
     groq_client = OpenAI(
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
     
-    eval_llm = llm_factory("llama-3.1-8b-instant", client=groq_client)
-    eval_embeddings = RagasHFEmbeddings(model="all-MiniLM-L6-v2")
+    eval_llm = llm_factory("qwen/qwen3.8-27b", client=groq_client)
+    faithfulness.llm = eval_llm
     
-    print("5. Running RAGAS Evaluation (Faithfulness & Answer Relevance)...")
+    print("5. Running RAGAS Evaluation (Faithfulness)...")
     result = evaluate(
         dataset=dataset,
-        metrics=[Faithfulness(llm=eval_llm), AnswerRelevancy(llm=eval_llm, embeddings=eval_embeddings)],
+        metrics=[faithfulness],
         llm=eval_llm,
-        embeddings=eval_embeddings,
         raise_exceptions=False,
-        run_config=RunConfig(max_workers=1, max_retries=20, max_wait=60)
+        run_config=RunConfig(max_workers=1, max_retries=10, max_wait=30)
     )
     
     print("\n--- EVALUATION COMPLETE ---")

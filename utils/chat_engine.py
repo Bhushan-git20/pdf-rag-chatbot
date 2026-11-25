@@ -21,8 +21,8 @@ def load_cross_encoder():
     """Load the CrossEncoder model once and cache it."""
     return HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-MiniLM-L-6-v2")
 
-def get_conversation_chain(retriever, llm=None):
-    """Build LCEL retrieval chain with Gemini 2.5 Flash and Reranker."""
+def get_conversation_chain(retriever, llm=None, use_reranker: bool = True):
+    """Build LCEL retrieval chain with Gemini 2.5 Flash and optional Reranker."""
     if llm is None:
         # Primary LLM: Google Gemini
         gemini_llm = ChatGoogleGenerativeAI(
@@ -45,13 +45,16 @@ def get_conversation_chain(retriever, llm=None):
         else:
             llm = gemini_llm
 
-    # Reranker setup
-    cross_encoder = load_cross_encoder()
-    compressor = CrossEncoderReranker(model=cross_encoder, top_n=3)
-    compression_retriever = ContextualCompressionRetriever(
-        base_compressor=compressor,
-        base_retriever=retriever
-    )
+    # Base or reranked retriever setup
+    if use_reranker:
+        cross_encoder = load_cross_encoder()
+        compressor = CrossEncoderReranker(model=cross_encoder, top_n=3)
+        effective_retriever = ContextualCompressionRetriever(
+            base_compressor=compressor,
+            base_retriever=retriever
+        )
+    else:
+        effective_retriever = retriever
 
     # Query expansion prompt
     contextualize_q_system_prompt = (
@@ -66,7 +69,7 @@ def get_conversation_chain(retriever, llm=None):
         MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ])
-    history_aware_retriever = create_history_aware_retriever(llm, compression_retriever, contextualize_q_prompt)
+    history_aware_retriever = create_history_aware_retriever(llm, effective_retriever, contextualize_q_prompt)
 
     # QA prompt
     qa_system_prompt = (
