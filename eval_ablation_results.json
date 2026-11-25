@@ -1,13 +1,15 @@
 {
     "metadata": {
-        "benchmark": "Multi-Domain Standardized RAG Benchmark",
+        "benchmark": "Synthetic Multi-Domain Benchmark (4 Fictional Documents)",
+        "benchmark_type": "synthetic",
         "sample_size": 40,
         "domains": [
-            "Finance (Acme Corp SEC 10-Q)",
-            "Clinical Health (XR-2 mRNA Phase III Protocol)",
-            "Structural Engineering (Alpha Bridge Infrastructure Specs)",
-            "Cloud Infrastructure SLA (Acme Cloud Distributed Object Storage)"
+            "Finance (Fictional Acme Corp SEC 10-Q)",
+            "Clinical Health (Fictional XR-2 mRNA Phase III Protocol)",
+            "Structural Engineering (Fictional Alpha Bridge Specs)",
+            "Cloud Infrastructure SLA (Fictional Acme Cloud Storage)"
         ],
+        "notes": "Queries are evaluated over 4 short in-memory fictional documents. Evaluates relative behavior of retrieval strategies on structured synthetic facts.",
         "previous_baseline": {
             "faithfulness": 0.9667,
             "samples": 15,
@@ -44,12 +46,10 @@
             "sample_size": 40
         }
     },
-    "resume_metrics": {
+    "metrics_summary": {
         "vector_faithfulness": 0.92,
         "hybrid_rerank_faithfulness": 0.985,
-        "faithfulness_improvement": "+0.065 (+7.1%)",
-        "hit_rate_improvement_percentage_points": "+10.0%",
-        "latency_reduction_pct": "51.9%",
-        "recommended_resume_line": "Engineered hybrid retrieval (ChromaDB + BM25) with CrossEncoder reranking, cutting query latency by 51.9% (7.69s to 3.70s) and improving retrieval hit rate from 90% to 100% with 0.985 faithfulness across a 40-query multi-domain benchmark."
+        "faithfulness_difference": "+0.065",
+        "hit_rate_difference_percentage_points": "+10.0%"
     }
 }

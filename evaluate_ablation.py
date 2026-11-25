@@ -545,7 +545,7 @@ def run_ablation_study():
             if idx % 10 == 0:
                 print(f"  Processed {idx}/{len(BENCHMARK_QUERIES)} queries...")
 
-        # Compute RAGAS Faithfulness on this pipeline
+        # Compute RAGAS Faithfulness on this pipeline (no silent fallbacks; errors must fail loudly)
         print(f"  Computing RAGAS Faithfulness for {cfg['name']}...")
         ds = Dataset.from_dict({
             "question": questions,
@@ -554,19 +554,15 @@ def run_ablation_study():
             "ground_truth": ground_truths
         })
 
-        try:
-            ragas_res = evaluate(
-                dataset=ds,
-                metrics=[faithfulness],
-                llm=eval_llm,
-                raise_exceptions=False,
-                run_config=RunConfig(max_workers=2, max_retries=10, max_wait=30)
-            )
-            df_ragas = ragas_res.to_pandas()
-            mean_faithfulness = float(df_ragas["faithfulness"].fillna(0.0).mean())
-        except Exception as e:
-            print(f"  Warning: RAGAS calculation error: {e}")
-            mean_faithfulness = 0.90
+        ragas_res = evaluate(
+            dataset=ds,
+            metrics=[faithfulness],
+            llm=eval_llm,
+            raise_exceptions=True,
+            run_config=RunConfig(max_workers=2, max_retries=10, max_wait=30)
+        )
+        df_ragas = ragas_res.to_pandas()
+        mean_faithfulness = float(df_ragas["faithfulness"].fillna(0.0).mean())
 
         mean_hit_rate = float(sum(hit_rates) / len(hit_rates))
         mean_latency = float(sum(latencies) / len(latencies))
@@ -586,7 +582,6 @@ def run_ablation_study():
     print("=" * 70)
     print(json.dumps(results_summary, indent=4))
 
-    # Calculate real numbers for resume line
     vector_f = results_summary["vector_only"]["faithfulness"]
     hybrid_rerank_f = results_summary["hybrid_rerank"]["faithfulness"]
     f_diff = hybrid_rerank_f - vector_f
@@ -598,9 +593,10 @@ def run_ablation_study():
 
     output_payload = {
         "metadata": {
-            "benchmark": "Multi-Domain Standardized RAG Benchmark",
+            "benchmark": "Synthetic Multi-Domain Benchmark (4 Fictional Documents)",
+            "benchmark_nature": "synthetic",
             "sample_size": len(BENCHMARK_QUERIES),
-            "domains": ["Finance (SEC 10-Q)", "Clinical Health (mRNA Trial)", "Structural Engineering", "Cloud Infrastructure SLA"],
+            "domains": ["Finance (Fictional SEC 10-Q)", "Clinical Health (Fictional mRNA Trial)", "Structural Engineering (Fictional Bridge)", "Cloud Infrastructure SLA (Fictional Spec)"],
             "previous_baseline": {
                 "faithfulness": 0.9667,
                 "samples": 15,
@@ -608,12 +604,11 @@ def run_ablation_study():
             }
         },
         "ablation_results": results_summary,
-        "resume_metrics": {
+        "metrics_summary": {
             "vector_faithfulness": vector_f,
             "hybrid_rerank_faithfulness": hybrid_rerank_f,
-            "faithfulness_improvement_pct": round(f_pct, 1),
-            "hit_rate_improvement_percentage_points": round(hit_diff, 1),
-            "recommended_resume_line": f"Engineered hybrid retrieval (ChromaDB + BM25) with CrossEncoder reranking, improving retrieval precision by {round(hit_diff, 1)} percentage points and faithfulness to {round(hybrid_rerank_f, 2)} on a 40-query multi-domain benchmark."
+            "faithfulness_difference": round(f_diff, 4),
+            "hit_rate_difference_percentage_points": round(hit_diff, 1)
         }
     }
 
