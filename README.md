@@ -20,12 +20,6 @@ A conversational AI chatbot that answers questions from uploaded PDF documents u
 
 ---
 
-## 🎯 AI Resume Highlights
-
-> **"Built a PDF question-answering chatbot using LangChain LCEL, ChromaDB, and BM25 hybrid retrieval with CrossEncoder reranking (ms-marco-MiniLM-L-6-v2); evaluated retrieval hit rate and faithfulness with RAGAS across a 40-query multi-domain synthetic test suite."**
-
----
-
 ## 🚀 Key Architectural Highlights
 
 - **Hybrid Sparse-Dense Retrieval**: Combines semantic vector search (`ChromaDB` with `text-embedding-004` / `all-MiniLM-L6-v2` fallback) and keyword lexical matching (`BM25`) via LangChain `EnsembleRetriever` (0.6 dense / 0.4 sparse).
@@ -44,6 +38,7 @@ To compare the impact of individual retrieval components, an ablation study was 
 > **Synthetic Benchmark Disclosure**: The evaluation was performed on 40 generated queries over 4 short fictional in-memory documents written in `evaluate_ablation.py` (a fictional SEC 10-Q filing, a hypothetical mRNA vaccine trial, fictional suspension bridge specifications, and a mock cloud storage SLA). While this measures the relative behavior of retrieval methods on structured facts, scores on real-world enterprise documents with complex tables and scanned pages will vary.
 
 ### Benchmark Corpus (40 Queries Across 4 Fictional Domains)
+
 1. **Corporate Finance / Fictional 10-Q (10 queries)**: Acme Corp Q3 revenue, ARR, operating margin, share repurchase timeline, and guidance.
 2. **Clinical Protocol / Fictional Vaccine Trial (10 queries)**: XR-2 mRNA trial efficacy, dosing schedule, cold-chain temperature limits, and contraindications.
 3. **Structural Engineering / Fictional Bridge Specs (10 queries)**: Alpha Bridge steel metallurgy (ASTM A709-50W), live load limits, wind ratings, and inspection cadence.
@@ -61,6 +56,7 @@ To compare the impact of individual retrieval components, an ablation study was 
 *\*Latency numbers are based on single test runs against cloud API endpoints and fluctuate with network conditions and API server load.*
 
 ### Observations & Caveats
+
 - **Hit Rate on Small Corpus**: The 100% hit rate was achieved on a small synthetic corpus of 4 clean text documents. On larger, noisier document collections with hundreds of pages, retrieval hit rates will be lower.
 - **Latency vs. Compute Tradeoff**: Compressing context from 8 chunks to 3 reduced the generation prompt size, resulting in a lower generation latency in our test runs (3.70s vs 7.69s for vector-only). However, CrossEncoder inference runs locally and adds a fixed compute overhead per query.
 - **Hybrid Balance**: BM25 struggled with semantic queries (*"How does the platform handle cross-region disaster recovery?"*), while pure vector search struggled with technical specs (*"ASTM A709 Grade 50W"*). Combining both yielded better coverage.
@@ -139,11 +135,13 @@ tests/
 ```
 
 ### Running the Tests
+
 ```bash
 pytest tests/ -v
 ```
 
 ### Edge Cases Handled
+
 - **Corrupted PDF Uploads**: Catches raw binary corruptions and invalid EOF markers without crashing the session.
 - **Empty & Scanned Documents**: Catches documents lacking an extractable text layer and displays an informative error.
 - **Thread Safety**: Uses `threading.local()` wrapper around embeddings to isolate instances across concurrent Streamlit threads.
@@ -171,7 +169,9 @@ docker run -p 8501:8501 \
 Access at `http://localhost:8501`.
 
 ### Continuous Integration (CI)
+
 GitHub Actions workflow runs on push and pull requests to `main`:
+
 - **Python 3.11 Environment Setup**
 - **Linting**: `flake8` for syntax errors and undefined variables
 - **Automated Tests**: `pytest tests/ -v`
@@ -207,6 +207,7 @@ pdf-rag-chatbot/
 ## 🚀 Local Development Setup
 
 ### 1️⃣ Clone & Setup Environment
+
 ```bash
 git clone https://github.com/Bhushan-git20/pdf-rag-chatbot.git
 cd pdf-rag-chatbot
@@ -215,21 +216,26 @@ source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
 ```
 
 ### 2️⃣ Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3️⃣ Configure Environment Variables
+
 ```bash
 cp .env.example .env
 ```
+
 Add your API keys to `.env`:
+
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ### 4️⃣ Launch Application
+
 ```bash
 streamlit run app.py
 ```
